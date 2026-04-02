@@ -1,0 +1,35 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Press Start 2P", system-ui;
+    background-color: black;
+}
+
+.heading {
+    color: lime;
+    font-size: 4rem;
+    padding: 2rem;
+    text-align: center;
+}
+
+.playField {
+    border: 2px solid lime;
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    margin: auto;
+    width: fit-content;
+}
+
+.cell {
+    aspect-ratio: 1/1;
+}
+
+.cell.filled {
+    background-color: lime;
+}
