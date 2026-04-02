@@ -27,6 +27,17 @@ const TETROMINOES = {
         [0, 1, 1],
     ],
 };
+
+const COLORS = {
+    I: "cyan",
+    O: "yellow",
+    T: "purple",
+    J: "blue",
+    L: "orange",
+    S: "green",
+    Z: "red",
+};
+
 const TETROMINOES_KEYS = Object.keys(TETROMINOES);
 const getRandomKey = function () {
     return TETROMINOES_KEYS.at(
@@ -40,7 +51,7 @@ class Game {
         this.cols = 10;
 
         this.matrix = Array.from({ length: this.rows }).map((row) =>
-            Array.from({ length: this.cols }).fill(0)
+            Array.from({ length: this.cols }).fill("")
         );
         this.currentPiece = null;
 
@@ -80,10 +91,13 @@ class Game {
     }
 
     spawnPiece() {
-        const shape = TETROMINOES[getRandomKey()];
+        const key = getRandomKey();
+        const shape = TETROMINOES[key];
+        const color = COLORS[key];
 
         const newPiece = {
             shape,
+            color,
             x: Math.floor((this.cols - shape[0].length) / 2),
             y: 0,
         };
@@ -181,6 +195,7 @@ class Game {
 
         return {
             shape: shapeAfterRotate,
+            color: this.currentPiece.color,
             x: this.currentPiece.x,
             y: this.currentPiece.y,
         };
@@ -196,7 +211,8 @@ class Game {
                 const newX = x + c;
                 const newY = y + r;
 
-                if (shape[r][c]) this.matrix[newY][newX] = shape[r][c];
+                if (shape[r][c])
+                    this.matrix[newY][newX] = this.currentPiece.color;
             }
         }
 
@@ -208,9 +224,9 @@ class Game {
     clearLines() {
         let i = this.matrix.length - 1;
         while (i >= 0) {
-            if (!this.matrix[i].includes(0)) {
+            if (!this.matrix[i].includes("")) {
                 this.matrix.splice(i, 1);
-                this.matrix.unshift(Array(this.cols).fill(0));
+                this.matrix.unshift(Array(this.cols).fill(""));
                 continue;
             }
             i--;
@@ -241,21 +257,31 @@ class Game {
     }
 
     renderBoard() {
+        const colors = [
+            "cyan",
+            "yellow",
+            "purple",
+            "blue",
+            "orange",
+            "green",
+            "red",
+        ];
         for (let r = 0; r < this.cells.length; r++) {
             for (let c = 0; c < this.cells[r].length; c++) {
-                this.cells[r][c].classList.remove("filled");
+                this.cells[r][c].classList.remove("fill", ...colors);
             }
         }
 
         for (let r = 0; r < this.matrix.length; r++) {
             for (let c = 0; c < this.matrix[r].length; c++) {
-                this.matrix[r][c] && this.cells[r][c].classList.add("filled");
+                if (this.matrix[r][c])
+                    this.cells[r][c].classList.add("fill", this.matrix[r][c]);
             }
         }
 
         if (!this.currentPiece) return;
 
-        const { shape, x, y } = this.currentPiece;
+        const { shape, color, x, y } = this.currentPiece;
 
         for (let r = 0; r < shape.length; r++) {
             for (let c = 0; c < shape[r].length; c++) {
@@ -264,7 +290,7 @@ class Game {
                     const newY = y + r;
 
                     if (this.cells[newY] && this.cells[newY][newX]) {
-                        this.cells[newY][newX].classList.add("filled");
+                        this.cells[newY][newX].classList.add("fill", color);
                     }
                 }
             }
