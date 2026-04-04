@@ -1,41 +1,31 @@
 const TETROMINOES = {
-    I: [[1, 1, 1]],
+    I: [["cyan", "cyan", "cyan"]],
     O: [
-        [1, 1],
-        [1, 1],
+        ["yellow", "yellow"],
+        ["yellow", "yellow"],
     ],
     T: [
-        [1, 1, 1],
-        [0, 1, 0],
+        ["purple", "purple", "purple"],
+        ["", "purple", ""],
     ],
     J: [
-        [0, 1],
-        [0, 1],
-        [1, 1],
+        ["", "blue"],
+        ["", "blue"],
+        ["blue", "blue"],
     ],
     L: [
-        [1, 0],
-        [1, 0],
-        [1, 1],
+        ["orange", ""],
+        ["orange", ""],
+        ["orange", "orange"],
     ],
     S: [
-        [0, 1, 1],
-        [1, 1, 0],
+        ["", "green", "green"],
+        ["green", "green", ""],
     ],
     Z: [
-        [1, 1, 0],
-        [0, 1, 1],
+        ["red", "red", ""],
+        ["", "red", "red"],
     ],
-};
-
-const COLORS = {
-    I: "cyan",
-    O: "yellow",
-    T: "purple",
-    J: "blue",
-    L: "orange",
-    S: "green",
-    Z: "red",
 };
 
 const TETROMINOES_KEYS = Object.keys(TETROMINOES);
@@ -91,13 +81,10 @@ class Game {
     }
 
     spawnPiece() {
-        const key = getRandomKey();
-        const shape = TETROMINOES[key];
-        const color = COLORS[key];
+        const shape = TETROMINOES[getRandomKey()];
 
         const newPiece = {
             shape,
-            color,
             x: Math.floor((this.cols - shape[0].length) / 2),
             y: 0,
         };
@@ -195,7 +182,6 @@ class Game {
 
         return {
             shape: shapeAfterRotate,
-            color: this.currentPiece.color,
             x: this.currentPiece.x,
             y: this.currentPiece.y,
         };
@@ -212,7 +198,7 @@ class Game {
                 const newY = y + r;
 
                 if (shape[r][c])
-                    this.matrix[newY][newX] = this.currentPiece.color;
+                    this.matrix[newY][newX] = shape[r][c];
             }
         }
 
@@ -281,7 +267,7 @@ class Game {
 
         if (!this.currentPiece) return;
 
-        const { shape, color, x, y } = this.currentPiece;
+        const { shape, x, y } = this.currentPiece;
 
         for (let r = 0; r < shape.length; r++) {
             for (let c = 0; c < shape[r].length; c++) {
@@ -290,7 +276,7 @@ class Game {
                     const newY = y + r;
 
                     if (this.cells[newY] && this.cells[newY][newX]) {
-                        this.cells[newY][newX].classList.add("fill", color);
+                        this.cells[newY][newX].classList.add("fill", shape[r][c]);
                     }
                 }
             }
