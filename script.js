@@ -47,6 +47,8 @@ class Game {
 
         this.isGameOver = false;
         this.isPaused = false;
+        this.score = 0;
+        this.scoreEl = document.querySelector(".score");
 
         this.DROP_INTERVAL = 1000;
         this.lastRender = performance.now();
@@ -123,6 +125,11 @@ class Game {
                     this.movePieceRight();
                     break;
                 }
+
+                case "Escape": {
+                    this.isPaused = !this.isPaused;
+                    !this.isPaused && (this.lastRender = performance.now());
+                }
             }
         });
 
@@ -197,8 +204,7 @@ class Game {
                 const newX = x + c;
                 const newY = y + r;
 
-                if (shape[r][c])
-                    this.matrix[newY][newX] = shape[r][c];
+                if (shape[r][c]) this.matrix[newY][newX] = shape[r][c];
             }
         }
 
@@ -209,14 +215,19 @@ class Game {
 
     clearLines() {
         let i = this.matrix.length - 1;
+        let linesCleared = 0;
         while (i >= 0) {
             if (!this.matrix[i].includes("")) {
                 this.matrix.splice(i, 1);
                 this.matrix.unshift(Array(this.cols).fill(""));
+                linesCleared++;
                 continue;
             }
             i--;
         }
+
+        this.score += linesCleared * 1000;
+        scoreEl.textContent = `SCORE - ${this.score}`;
     }
 
     checkCollision(piece, offsetX = 0, offsetY = 0) {
@@ -254,7 +265,11 @@ class Game {
         ];
         for (let r = 0; r < this.cells.length; r++) {
             for (let c = 0; c < this.cells[r].length; c++) {
-                this.cells[r][c].classList.remove("fill", ...colors);
+                this.cells[r][c].classList.remove(
+                    "fill",
+                    "translucent",
+                    ...colors
+                );
             }
         }
 
@@ -267,8 +282,16 @@ class Game {
 
         if (!this.currentPiece) return;
 
-        const { shape, x, y } = this.currentPiece;
+        const ghostPiece = JSON.parse(JSON.stringify(this.currentPiece));
+        let offset = 0;
 
+        while (!this.checkCollision(ghostPiece, 0, offset)) {
+            offset++;
+        }
+
+        ghostPiece.y = ghostPiece.y + offset - 1;
+
+        let { shape, x, y } = ghostPiece;
         for (let r = 0; r < shape.length; r++) {
             for (let c = 0; c < shape[r].length; c++) {
                 if (shape[r][c]) {
@@ -276,7 +299,29 @@ class Game {
                     const newY = y + r;
 
                     if (this.cells[newY] && this.cells[newY][newX]) {
-                        this.cells[newY][newX].classList.add("fill", shape[r][c]);
+                        this.cells[newY][newX].classList.add(
+                            "fill",
+                            "translucent",
+                            shape[r][c]
+                        );
+                    }
+                }
+            }
+        }
+
+        ({ shape, x, y } = this.currentPiece);
+        for (let r = 0; r < shape.length; r++) {
+            for (let c = 0; c < shape[r].length; c++) {
+                if (shape[r][c]) {
+                    const newX = x + c;
+                    const newY = y + r;
+
+                    if (this.cells[newY] && this.cells[newY][newX]) {
+                        this.cells[newY][newX].classList.remove("translucent");
+                        this.cells[newY][newX].classList.add(
+                            "fill",
+                            shape[r][c]
+                        );
                     }
                 }
             }
