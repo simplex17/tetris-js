@@ -227,7 +227,7 @@ class Game {
         }
 
         this.score += linesCleared * 1000;
-        scoreEl.textContent = `SCORE - ${this.score}`;
+        this.scoreEl.textContent = `SCORE - ${this.score}`;
     }
 
     checkCollision(piece, offsetX = 0, offsetY = 0) {
