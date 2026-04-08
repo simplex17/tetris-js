@@ -1,5 +1,5 @@
 const TETROMINOES = {
-    I: [["cyan", "cyan", "cyan"]],
+    I: [["cyan", "cyan", "cyan", "cyan"]],
     O: [
         ["yellow", "yellow"],
         ["yellow", "yellow"],
@@ -29,21 +29,37 @@ const TETROMINOES = {
 };
 
 const TETROMINOES_KEYS = Object.keys(TETROMINOES);
-const getRandomKey = function () {
-    return TETROMINOES_KEYS.at(
-        Math.floor(Math.random() * TETROMINOES_KEYS.length)
-    );
+const getBag = function () {
+    let array = [...TETROMINOES_KEYS];
+
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
 };
 
 class Game {
     constructor() {
         this.rows = 20;
         this.cols = 10;
+        this.colors = [
+            "cyan",
+            "yellow",
+            "purple",
+            "blue",
+            "orange",
+            "green",
+            "red",
+        ];
 
         this.matrix = Array.from({ length: this.rows }).map((row) =>
             Array.from({ length: this.cols }).fill("")
         );
+        this.bag = [];
         this.currentPiece = null;
+        this.ghostPiece = null;
 
         this.isGameOver = false;
         this.isPaused = false;
@@ -83,7 +99,11 @@ class Game {
     }
 
     spawnPiece() {
-        const shape = TETROMINOES[getRandomKey()];
+        if (!this.bag.length) {
+            this.bag = getBag();
+        }
+
+        const shape = TETROMINOES[this.bag.pop()];
 
         const newPiece = {
             shape,
@@ -123,6 +143,11 @@ class Game {
 
                 case "ArrowRight": {
                     this.movePieceRight();
+                    break;
+                }
+
+                case " ": {
+                    this.hardDrop();
                     break;
                 }
 
@@ -170,6 +195,11 @@ class Game {
         if (!this.checkCollision(this.currentPiece, 0, 1))
             this.currentPiece.y++;
         else this.updateBoard();
+    }
+
+    hardDrop() {
+        this.currentPiece.y = this.ghostPiece.y;
+        this.updateBoard();
     }
 
     movePieceLeft() {
@@ -254,21 +284,12 @@ class Game {
     }
 
     renderBoard() {
-        const colors = [
-            "cyan",
-            "yellow",
-            "purple",
-            "blue",
-            "orange",
-            "green",
-            "red",
-        ];
         for (let r = 0; r < this.cells.length; r++) {
             for (let c = 0; c < this.cells[r].length; c++) {
                 this.cells[r][c].classList.remove(
                     "fill",
                     "translucent",
-                    ...colors
+                    ...this.colors
                 );
             }
         }
@@ -282,16 +303,16 @@ class Game {
 
         if (!this.currentPiece) return;
 
-        const ghostPiece = JSON.parse(JSON.stringify(this.currentPiece));
+        this.ghostPiece = JSON.parse(JSON.stringify(this.currentPiece));
         let offset = 0;
 
-        while (!this.checkCollision(ghostPiece, 0, offset)) {
+        while (!this.checkCollision(this.ghostPiece, 0, offset)) {
             offset++;
         }
 
-        ghostPiece.y = ghostPiece.y + offset - 1;
+        this.ghostPiece.y = this.ghostPiece.y + offset - 1;
 
-        let { shape, x, y } = ghostPiece;
+        let { shape, x, y } = this.ghostPiece;
         for (let r = 0; r < shape.length; r++) {
             for (let c = 0; c < shape[r].length; c++) {
                 if (shape[r][c]) {
