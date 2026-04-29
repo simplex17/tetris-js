@@ -1,21 +1,22 @@
-Tetris Clone
+# Tetris Clone
 
 A browser-based Tetris game built from scratch using JavaScript. Implements a custom game loop using `requestAnimationFrame` and delta-time updates.
 
 ## Demo
 
-https://simplex17.github.io/tetris-js/
+[Play Here] https://simplex17.github.io/tetris-js/
 
 ## Controls
 
-- ⬅️ Arrow Left — Move left  
-- ➡️ Arrow Right — Move right  
-- ⬇️ Arrow Down — Soft drop  
+- ⬅️ Arrow Left — Move left
+- ➡️ Arrow Right — Move right
+- ⬇️ Arrow Down — Soft drop
 - ⬆️ Arrow Up — Rotate
+- 🅿️ P - Pause
 
 ## Tech Stack
 
-- JavaScipt (ES6)
+- JavaScript (ES6)
 - HTML5
 - CSS3
 
@@ -29,6 +30,12 @@ https://simplex17.github.io/tetris-js/
 
 ## Future Improvements
 
-- Ghost piece (landing preview)
-- Hard drop (instant drop)
-- Increasing difficulty over time
+- Wall kick
+- Visual pause screen
+- Progressive difficulty scaling
+- Better scoring system
+
+## Run Locally
+
+1. Clone the repository
+2. Open `index.html` in your browser

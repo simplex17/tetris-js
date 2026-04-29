@@ -55,7 +55,7 @@ class Game {
         ];
 
         this.matrix = Array.from({ length: this.rows }).map((row) =>
-            Array.from({ length: this.cols }).fill("")
+            Array.from({ length: this.cols }).fill(""),
         );
         this.bag = [];
         this.currentPiece = null;
@@ -123,6 +123,7 @@ class Game {
     setListeners() {
         addEventListener("keydown", (event) => {
             if (this.isGameOver) return;
+            console.log(event.key)
             switch (event.key) {
                 case "ArrowUp": {
                     const rotatedPiece = this.rotatePiece();
@@ -151,7 +152,7 @@ class Game {
                     break;
                 }
 
-                case "Escape": {
+                case "p": {
                     this.isPaused = !this.isPaused;
                     !this.isPaused && (this.lastRender = performance.now());
                 }
@@ -214,7 +215,7 @@ class Game {
 
     rotatePiece() {
         const shapeAfterRotate = this.currentPiece.shape[0].map((val, index) =>
-            this.currentPiece.shape.map((row) => row[index]).reverse()
+            this.currentPiece.shape.map((row) => row[index]).reverse(),
         );
 
         return {
@@ -289,7 +290,7 @@ class Game {
                 this.cells[r][c].classList.remove(
                     "fill",
                     "translucent",
-                    ...this.colors
+                    ...this.colors,
                 );
             }
         }
@@ -323,7 +324,7 @@ class Game {
                         this.cells[newY][newX].classList.add(
                             "fill",
                             "translucent",
-                            shape[r][c]
+                            shape[r][c],
                         );
                     }
                 }
@@ -341,7 +342,7 @@ class Game {
                         this.cells[newY][newX].classList.remove("translucent");
                         this.cells[newY][newX].classList.add(
                             "fill",
-                            shape[r][c]
+                            shape[r][c],
                         );
                     }
                 }
